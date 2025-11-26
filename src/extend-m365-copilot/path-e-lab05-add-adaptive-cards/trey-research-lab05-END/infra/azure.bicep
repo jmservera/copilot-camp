@@ -3,6 +3,8 @@
 param resourceBaseName string
 param functionAppSKU string
 param functionStorageSKU string
+@description('Principal ID of the current user (for granting storage permissions during deployment)')
+param currentUserPrincipalId string = ''
 
 param location string = resourceGroup().location
 param serverfarmsName string = resourceBaseName
@@ -134,8 +136,20 @@ resource functionStorageBlobRoleAssignment 'Microsoft.Authorization/roleAssignme
   }
 }
 
+// Grant current user access to storage account for running db-setup script locally
+resource currentUserStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (currentUserPrincipalId != '') {
+  name: guid(storageAccount.id, currentUserPrincipalId, storageTableDataContributorRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorRoleId)
+    principalId: currentUserPrincipalId
+    principalType: 'User'
+  }
+}
+
 // The output will be persisted in .env.{envName}. Visit https://aka.ms/teamsfx-actions/arm-deploy for more details.
 output API_FUNCTION_ENDPOINT string = apiEndpoint
 output API_FUNCTION_RESOURCE_ID string = functionApp.id
 output OPENAPI_SERVER_URL string = apiEndpoint
 output STORAGE_ACCOUNT_NAME string = storageAccount.name
+output AZURE_CURRENT_USER_OBJECT_ID string = currentUserPrincipalId

@@ -28,7 +28,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     name: 'Standard_LRS'
   }
 }
-var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
 
 // Compute resources for Azure Functions
 resource serverfarms 'Microsoft.Web/serverfarms@2021-02-01' = {
@@ -45,18 +44,17 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
   name: functionAppName
   kind: 'functionapp'
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: serverfarms.id
     httpsOnly: true
     siteConfig: {
       appSettings: [
         {
-          name: ' AzureWebJobsDashboard'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage.name};AccountKey=${listKeys(functionStorage.id, functionStorage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}' // Azure Functions internal setting
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage.name};AccountKey=${listKeys(functionStorage.id, functionStorage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}' // Azure Functions internal setting
+          name: 'AzureWebJobsStorage__accountName'
+          value: functionStorage.name
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -67,8 +65,8 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
           value: 'node' // Set runtime to NodeJS
         }
         {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage.name};AccountKey=${listKeys(functionStorage.id, functionStorage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}' // Azure Functions internal setting
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING__accountName'
+          value: functionStorage.name
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
@@ -79,8 +77,8 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
           value: '~18' // Set NodeJS version to 18.x
         }
         {
-          name: 'STORAGE_ACCOUNT_CONNECTION_STRING'
-          value: storageAccountConnectionString
+          name: 'STORAGE_ACCOUNT_NAME'
+          value: storageAccount.name
         }
       ]
       ftpsState: 'FtpsOnly'
@@ -90,8 +88,54 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
 var apiEndpoint = 'https://${functionApp.properties.defaultHostName}'
 
 
+// Role assignments for managed identity
+var storageTableDataContributorRoleId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+var storageBlobDataContributorRoleId = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+
+// Grant Function App managed identity access to data storage account
+resource dataStorageTableRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, functionApp.id, storageTableDataContributorRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource dataStorageBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storageAccount.id, functionApp.id, storageBlobDataContributorRoleId)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Grant Function App managed identity access to function storage account
+resource functionStorageTableRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(functionStorage.id, functionApp.id, storageTableDataContributorRoleId)
+  scope: functionStorage
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource functionStorageBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(functionStorage.id, functionApp.id, storageBlobDataContributorRoleId)
+  scope: functionStorage
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataContributorRoleId)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // The output will be persisted in .env.{envName}. Visit https://aka.ms/teamsfx-actions/arm-deploy for more details.
 output API_FUNCTION_ENDPOINT string = apiEndpoint
 output API_FUNCTION_RESOURCE_ID string = functionApp.id
 output OPENAPI_SERVER_URL string = apiEndpoint
-output SECRET_STORAGE_ACCOUNT_CONNECTION_STRING string = storageAccountConnectionString
+output STORAGE_ACCOUNT_NAME string = storageAccount.name

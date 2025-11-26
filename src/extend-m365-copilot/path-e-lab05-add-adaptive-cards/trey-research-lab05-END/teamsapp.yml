@@ -48,7 +48,7 @@ provision:
   - uses: script
     name: Ensure database
     with:
-      run: node db-setup.js ${{SECRET_STORAGE_ACCOUNT_CONNECTION_STRING}}
+      run: node db-setup.js ${{STORAGE_ACCOUNT_NAME}}
       workingDirectory: scripts
 
   # Validate using manifest schema

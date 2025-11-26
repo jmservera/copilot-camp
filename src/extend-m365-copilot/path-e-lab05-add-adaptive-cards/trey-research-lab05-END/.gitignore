@@ -31,8 +31,10 @@ appsettings.json
 
 # Azurite storage
 _storage_emulator
+__azurite*
 
 # User-specific files
 appPackage/hand-built
 
 
+.env.dev

@@ -72,8 +72,17 @@
                     ]
                   }
                 ]
-              }   
-             
+              }
+            ],
+            "actions": [
+              {
+                "type": "Action.InsertImage",
+                "title": "Insert",
+                "altText": "An image of the consultant",
+                "url": "${consultantPhotoUrl}",
+                "fallback": "drop",
+                "insertPosition": "Selection"
+              }
             ]
           }
         }
@@ -90,7 +99,7 @@
             "subtitle": "$.id",
             "url": "$.consultantPhotoUrl"
           },
-          "static_template":{
+          "static_template": {
             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
             "type": "AdaptiveCard",
             "version": "1.5",
@@ -147,8 +156,17 @@
                     ]
                   }
                 ]
-              }   
-             
+              }
+            ],
+            "actions": [
+              {
+                "type": "Action.InsertImage",
+                "title": "Insert",
+                "altText": "An image of the consultant",
+                "url": "${consultantPhotoUrl}",
+                "fallback": "drop",
+                "insertPosition": "Selection"
+              }
             ]
           }
         }
@@ -342,6 +360,14 @@
                 "type": "Action.OpenUrl",
                 "title": "View map",
                 "url": "${mapUrl}"
+              },
+              {
+                "type": "Action.InsertImage",
+                "title": "Insert",
+                "altText": "An image of the map",
+                "url": "${mapUrl}",
+                "fallback": "drop",
+                "insertPosition": "Selection"
               }
             ]
           }
@@ -369,7 +395,7 @@
                 "weight": "Bolder",
                 "size": "Large",
                 "separator": true
-              },              
+              },
               {
                 "type": "Container",
                 "items": [
@@ -401,7 +427,7 @@
                     "wrap": true
                   }
                 ]
-              },  
+              },
               {
                 "type": "Container",
                 "items": [
@@ -417,7 +443,7 @@
                     "wrap": true
                   }
                 ]
-              },           
+              },
               {
                 "type": "Container",
                 "items": [
@@ -436,7 +462,6 @@
               }
             ]
           }
-          
         },
         "confirmation": {
           "type": "AdaptiveCard",
@@ -467,7 +492,7 @@
                 "size": "Large",
                 "separator": true,
                 "spacing": "Medium"
-              },              
+              },
               {
                 "type": "Container",
                 "items": [
@@ -547,11 +572,9 @@
                     "wrap": true
                   }
                 ]
-              }            
+              }
             ]
-          
           }
-          
         },
         "confirmation": {
           "type": "AdaptiveCard",

@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1813,7 +1813,7 @@
   <span class="md-ellipsis">
     
   
-    ラボ BMA1 - Azure AI Foundry でエージェントを準備する
+    ラボ BMA1 - Microsoft Foundry でエージェントを準備する
   
 
     
@@ -1869,7 +1869,7 @@
   <span class="md-ellipsis">
     
   
-    ラボ BMA3 - Azure AI Foundry エージェントを M365 Agents SDK と統合
+    ラボ BMA3 - Microsoft Foundry エージェントを M365 Agents SDK と統合
   
 
     
@@ -2202,14 +2202,14 @@
 <p>Azure OpenAI サービスが作成されたら、リソースに移動し、左ペインの <strong>Keys and Endpoint</strong> を選択します。<code>KEY 1</code> と <code>Endpoint</code> をコピーして保存してください。これらは演習 2 で使用します。</p>
 <p><cc-end-step lab="bta1" exercise="1" step="1" /></p>
 <h3 id="2">手順 2: デプロイ モデルの作成</h3>
-<p>Azure OpenAI サービスで <code>Azure AI Foundry</code> に移動し、デプロイ モデルを作成します。</p>
+<p>Azure OpenAI サービスで <code>Microsoft Foundry</code> に移動し、デプロイ モデルを作成します。</p>
 <details class="check">
-<summary>Azure AI Foundry とは?</summary>
-<p>Azure AI Foundry は、<code>gpt-35-turbo</code>、<code>gpt-4</code>、<code>Dall-e</code> などの OpenAI モデルを試しながら、ユースケースに合わせたプロンプトを作成・微調整できるプレイグラウンドです。<code>Phi-3</code>、<code>Llama 3.1</code> など OpenAI 以外のモデルも扱え、Speech や Vision など他の Azure AI サービスへの入口にもなります。</p>
+<summary>Microsoft Foundry とは?</summary>
+<p>Microsoft Foundry は、<code>gpt-35-turbo</code>、<code>gpt-4</code>、<code>Dall-e</code> などの OpenAI モデルを試しながら、ユースケースに合わせたプロンプトを作成・微調整できるプレイグラウンドです。<code>Phi-3</code>、<code>Llama 3.1</code> など OpenAI 以外のモデルも扱え、Speech や Vision など他の Azure AI サービスへの入口にもなります。</p>
 <p><em>Generative AI とプロンプティングについては、この Doodle to Code ビデオで学びましょう!</em>  </p>
 <p><iframe src="//www.youtube.com/embed/PGI6oxbcYDc?si=02JzvwHpnOx3rsSD" frameborder="0" allowfullscreen></iframe></p>
 </details>
-<p>Azure AI Foundry で <strong>Deployments</strong> タブを選択し <strong>Deploy model</strong> &gt; <strong>Deploy base model</strong> をクリックします。<code>gpt-4</code> など使用したいモデルを検索し <strong>Confirm</strong> をクリックします。次の項目を入力し <strong>Deploy</strong> を選択します:</p>
+<p>Microsoft Foundry で <strong>Deployments</strong> タブを選択し <strong>Deploy model</strong> &gt; <strong>Deploy base model</strong> をクリックします。<code>gpt-4</code> など使用したいモデルを検索し <strong>Confirm</strong> をクリックします。次の項目を入力し <strong>Deploy</strong> を選択します:</p>
 <ul>
 <li><strong>Deployment name:</strong> モデル名と同じにすることを推奨 (例 <code>gpt-4</code>)  </li>
 <li><strong>Select a model:</strong> <code>gpt-4</code> を推奨  </li>
@@ -2223,7 +2223,7 @@
 </div>
 <p>モデルが作成されたら <strong>Open in playground</strong> をクリックし、上部の <strong>Prompt samples</strong> を選択して任意のプロンプトを試します。</p>
 <p>例として "Shakespearean Writing Assistant" を選び <strong>Use prompt</strong> をクリックし、「tell me about Istanbul」などと質問してみましょう。詩的で描写豊かな回答に驚くはずです ✍️。</p>
-<p><img alt="The UI of Azure AI Foundry while testing a model in the Chat Playground. There are setup settings on the left and a chat on the right where the 'tell me about Istanbul' prompt gets a long and detailed answer." src="../../../../../assets/images/custom-engine-01/azure-openai-studio-chat.png" /></p>
+<p><img alt="The UI of Microsoft Foundry while testing a model in the Chat Playground. There are setup settings on the left and a chat on the right where the 'tell me about Istanbul' prompt gets a long and detailed answer." src="../../../../../assets/images/custom-engine-01/azure-openai-studio-chat.png" /></p>
 <p><cc-end-step lab="bta1" exercise="1" step="2" /></p>
 <h2 id="2_1">演習 2: テンプレートからカスタム エンジン エージェントをスキャフォールディング</h2>
 <p>開始前にすべての <a href="../00-prerequisites/" target="_blank">必須前提条件</a> を完了してください。</p>
@@ -2330,10 +2330,10 @@ You like using emojis where appropriate.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "toc.integrate", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "toc.integrate", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
     
     
-      <script src="../../../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../../javascripts/cc-award.js"></script>
       

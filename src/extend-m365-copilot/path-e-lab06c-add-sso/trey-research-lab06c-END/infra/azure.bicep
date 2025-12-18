@@ -17,6 +17,12 @@ resource functionStorage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
   sku: {
     name: functionStorageSKU// You can follow https://aka.ms/teamsfx-bicep-add-param-tutorial to add functionStorageSKUproperty to provisionParameters to override the default value "Standard_LRS".
   }
+  properties: {
+    allowBlobPublicAccess: true
+    networkAcls: {
+      defaultAction: 'Allow'
+    }
+  }
 }
 
 // Storage account for database table storage
@@ -26,6 +32,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   kind: 'StorageV2'
   sku: {
     name: 'Standard_LRS'
+  }
+  properties: {
+    allowBlobPublicAccess: true
+    networkAcls: {
+      defaultAction: 'Allow'
+    }
   }
 }
 var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
@@ -51,7 +63,7 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
     siteConfig: {
       appSettings: [
         {
-          name: ' AzureWebJobsDashboard'
+          name: 'AzureWebJobsDashboard'
           value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage.name};AccountKey=${listKeys(functionStorage.id, functionStorage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}' // Azure Functions internal setting
         }
         {
@@ -66,10 +78,7 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: 'node' // Set runtime to NodeJS
         }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage.name};AccountKey=${listKeys(functionStorage.id, functionStorage.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}' // Azure Functions internal setting
-        }
+        
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '1' // Run Azure Functions from a package file

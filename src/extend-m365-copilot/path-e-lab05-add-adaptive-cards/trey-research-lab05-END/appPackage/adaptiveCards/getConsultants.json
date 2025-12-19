@@ -189,5 +189,20 @@
         }
       ]
     }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "View picture",
+      "url": "${consultantPhotoUrl}"
+    },
+    {
+      "type": "Action.InsertImage",
+      "title": "Insert image",
+      "altText": "An image of the map",
+      "url": "${consultantPhotoUrl}",
+      "fallback": "drop",
+      "insertPosition": "Selection"
+    }
   ]
 }

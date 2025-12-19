@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
   "manifestVersion": "1.24",
   "id": "${{TEAMS_APP_ID}}",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "developer": {
     "name": "Microsoft365 Developer Advocates",
     "websiteUrl": "https://www.example.com",

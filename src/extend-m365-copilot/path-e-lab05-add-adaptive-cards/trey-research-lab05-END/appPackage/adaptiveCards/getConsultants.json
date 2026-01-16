@@ -199,7 +199,7 @@
     {
       "type": "Action.InsertImage",
       "title": "Insert image",
-      "altText": "An image of the map",
+      "altText": "An image of the consultant",
       "url": "${consultantPhotoUrl}",
       "fallback": "drop",
       "insertPosition": "Selection"

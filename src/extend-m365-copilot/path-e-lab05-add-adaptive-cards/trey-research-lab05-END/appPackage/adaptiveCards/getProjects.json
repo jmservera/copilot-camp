@@ -1,0 +1,224 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5",
+    "body": [
+        {
+            "type": "Container",
+            "style": "emphasis",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "${name}",
+                                    "weight": "Bolder",
+                                    "size": "Large",
+                                    "wrap": true,
+                                    "color": "Accent"
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "text": "ID: ${id}",
+                                    "isSubtle": true,
+                                    "spacing": "None",
+                                    "wrap": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "${description}",
+                    "wrap": true,
+                    "spacing": "Medium"
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "spacing": "Medium",
+            "separator": true,
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "🏢 Client Information",
+                    "weight": "Bolder",
+                    "size": "Medium",
+                    "color": "Accent"
+                },
+                {
+                    "type": "FactSet",
+                    "spacing": "Small",
+                    "facts": [
+                        {
+                            "title": "Client:",
+                            "value": "${clientName}"
+                        },
+                        {
+                            "title": "Contact:",
+                            "value": "${clientContact}"
+                        },
+                        {
+                            "title": "Email:",
+                            "value": "${clientEmail}"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "spacing": "Medium",
+            "separator": true,
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "📍 Project Location",
+                    "weight": "Bolder",
+                    "size": "Medium",
+                    "color": "Accent"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "${location.street}",
+                    "wrap": true,
+                    "spacing": "Small"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "${location.city}, ${location.state} ${location.postalCode}",
+                    "wrap": true,
+                    "spacing": "None"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "${location.country}",
+                    "wrap": true,
+                    "spacing": "None"
+                },
+                {
+                    "type": "Image",
+                    "url": "${mapUrl}",
+                    "size": "Large",
+                    "spacing": "Small"
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "spacing": "Medium",
+            "separator": true,
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "📊 Project Hours Summary",
+                    "weight": "Bolder",
+                    "size": "Medium",
+                    "color": "Accent"
+                },
+                {
+                    "type": "FactSet",
+                    "spacing": "Small",
+                    "facts": [
+                        {
+                            "title": "⏱️ Last Month:",
+                            "value": "${deliveredLastMonth}h delivered"
+                        },
+                        {
+                            "title": "⏱️ This Month:",
+                            "value": "${deliveredThisMonth}h delivered | ${forecastThisMonth}h forecasted"
+                        },
+                        {
+                            "title": "⏱️ Next Month:",
+                            "value": "${forecastNextMonth}h forecasted"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "spacing": "Medium",
+            "separator": true,
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "👥 Assigned Consultants",
+                    "weight": "Bolder",
+                    "size": "Medium",
+                    "color": "Accent"
+                },
+                {
+                    "type": "Container",
+                    "items": [
+                        {
+                            "$data": "${consultants}",
+                            "type": "Container",
+                            "spacing": "Medium",
+                            "style": "emphasis",
+                            "separator": true,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "**${consultantName}** - ${role}",
+                                    "wrap": true,
+                                    "weight": "Bolder"
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "text": "📍 ${consultantLocation.city}, ${consultantLocation.state}, ${consultantLocation.country}",
+                                    "wrap": true,
+                                    "isSubtle": true,
+                                    "spacing": "Small",
+                                    "size": "Small"
+                                },
+                                {
+                                    "type": "FactSet",
+                                    "spacing": "Small",
+                                    "facts": [
+                                        {
+                                            "title": "Last Month:",
+                                            "value": "${deliveredLastMonth}h"
+                                        },
+                                        {
+                                            "title": "This Month:",
+                                            "value": "${deliveredThisMonth}h (${forecastThisMonth}h forecast)"
+                                        },
+                                        {
+                                            "title": "Next Month:",
+                                            "value": "${forecastNextMonth}h forecast"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "title": "View location map",
+            "iconUrl": "icon:GlobeLocation",
+            "url": "${mapUrl}"
+        },
+        {
+            "type": "Action.InsertImage",
+            "title": "Insert image",
+            "altText": "An image of the map",
+            "iconUrl": "icon:DrawImage",
+            "url": "${mapUrl}",
+            "fallback": "drop",
+            "insertPosition": "Selection"
+        }
+    ]
+}

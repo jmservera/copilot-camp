@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.2/schema.json",
   "schema_version": "v2.2",
   "namespace": "treyresearch",
-  "name_for_human": "Trey-Research${{APP_NAME_SUFFIX}}",
+  "name_for_human": "Trey-Research-${{APP_NAME_SUFFIX}}",
   "description_for_human": "Plugin to streamline consultant assignment and project management.",
   "description_for_model": "Plugin for managing repairs, consultant assignments, and project tracking within Trey Research. Provides functionalities to list repairs with details and images.",
   "functions": [
@@ -49,6 +49,9 @@
           "properties": {
             "title": "$.name",
             "subtitle": "$.description"
+          },
+          "static_template": {
+            "file": "adaptiveCards/getProjects.json"
           }
         }
       }

@@ -1,16 +1,41 @@
 const { TableClient, TableServiceClient } = require("@azure/data-tables");
+const { DefaultAzureCredential } = require("@azure/identity");
 const { randomUUID } = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
 const TABLE_NAMES = [ "Project", "Consultant", "Assignment" ];
 
+function createTableServiceClient(accountNameOrConnStr) {
+    if (!accountNameOrConnStr || accountNameOrConnStr === "UseDevelopmentStorage=true") {
+        return TableServiceClient.fromConnectionString("UseDevelopmentStorage=true");
+    }
+    // If it looks like a connection string, use it directly
+    if (accountNameOrConnStr.includes("AccountKey=") || accountNameOrConnStr.includes("DefaultEndpointsProtocol=")) {
+        return TableServiceClient.fromConnectionString(accountNameOrConnStr);
+    }
+    // Otherwise treat as account name and use managed identity
+    const url = `https://${accountNameOrConnStr}.table.core.windows.net`;
+    return new TableServiceClient(url, new DefaultAzureCredential());
+}
+
+function createTableClient(accountNameOrConnStr, tableName) {
+    if (!accountNameOrConnStr || accountNameOrConnStr === "UseDevelopmentStorage=true") {
+        return TableClient.fromConnectionString("UseDevelopmentStorage=true", tableName);
+    }
+    if (accountNameOrConnStr.includes("AccountKey=") || accountNameOrConnStr.includes("DefaultEndpointsProtocol=")) {
+        return TableClient.fromConnectionString(accountNameOrConnStr, tableName);
+    }
+    const url = `https://${accountNameOrConnStr}.table.core.windows.net`;
+    return new TableClient(url, tableName, new DefaultAzureCredential());
+}
+
 (async () => {
 
-    const connectionString = process.argv[2] ? process.argv[2] : "UseDevelopmentStorage=true";
+    const accountNameOrConnStr = process.argv[2] ? process.argv[2] : "UseDevelopmentStorage=true";
     const reset = process.argv[3] === "--reset" || process.argv[3] === "-r" ? true : false;
 
-    const tableServiceClient = TableServiceClient.fromConnectionString(connectionString);
+    const tableServiceClient = createTableServiceClient(accountNameOrConnStr);
 
     // Function returns an array of table names in the storage account
     async function getTables(tableServiceClient) {
@@ -25,7 +50,7 @@ const TABLE_NAMES = [ "Project", "Consultant", "Assignment" ];
     if (reset) {
         const tables = await getTables(tableServiceClient);
         tables.forEach(async table => {
-            const tableClient = TableClient.fromConnectionString(connectionString, table);
+            const tableClient = createTableClient(accountNameOrConnStr, table);
             console.log(`Deleting table: ${table}`);
             await tableClient.deleteTable();
         });
@@ -69,7 +94,7 @@ const TABLE_NAMES = [ "Project", "Consultant", "Assignment" ];
         }
 
         // Add entities to table
-        const tableClient = TableClient.fromConnectionString(connectionString, tableName);
+        const tableClient = createTableClient(accountNameOrConnStr, tableName);
         const jsonString = fs.readFileSync(path.resolve(__dirname, "db", `${tableName}.json`), "utf8");
         const entities = JSON.parse(jsonString);
 

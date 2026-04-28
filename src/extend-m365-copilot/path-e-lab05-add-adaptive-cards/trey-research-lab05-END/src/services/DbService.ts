@@ -1,23 +1,30 @@
 import { TableClient, TableEntity } from "@azure/data-tables";
+import { DefaultAzureCredential } from "@azure/identity";
 import { HttpError } from './Utilities';
 import { DbEntity } from '../model/dbModel';
 
 export default class DbService<DbEntityType> {
 
-    private storageAccountConnectionString = process.env.STORAGE_ACCOUNT_CONNECTION_STRING ??"UseDevelopmentStorage=true";
+    private storageAccountName = process.env.STORAGE_ACCOUNT_NAME;
     private okToCacheLocally = false;
     private entityCache: DbEntity[] = [];
 
     constructor(okToCacheLocally: boolean) {
-        if (!this.storageAccountConnectionString) {
-            throw new Error("STORAGE_ACCOUNT_CONNECTION_STRING is not set");
-        }
         this.okToCacheLocally = okToCacheLocally;
+    }
+
+    private getTableClient(tableName: string): TableClient {
+        if (!this.storageAccountName) {
+            // Local development with Azurite
+            return TableClient.fromConnectionString("UseDevelopmentStorage=true", tableName);
+        }
+        const url = `https://${this.storageAccountName}.table.core.windows.net`;
+        return new TableClient(url, tableName, new DefaultAzureCredential());
     }
 
     async getEntityByRowKey(tableName: string, rowKey: string): Promise<DbEntity> {
         if (!this.okToCacheLocally) {
-            const tableClient = TableClient.fromConnectionString(this.storageAccountConnectionString, tableName);
+            const tableClient = this.getTableClient(tableName);
             const result = this.expandPropertyValues(await tableClient.getEntity(tableName, rowKey) as DbEntityType);
             return result as DbEntity;
         } else {
@@ -37,7 +44,7 @@ export default class DbService<DbEntityType> {
 
         if (!this.okToCacheLocally || this.entityCache.length === 0) {
             // Rebuild cache for this entity
-            const tableClient = TableClient.fromConnectionString(this.storageAccountConnectionString, tableName);
+            const tableClient = this.getTableClient(tableName);
             const entities = tableClient.listEntities();
             this.entityCache = [];
             for await (const entity of entities) {
@@ -55,7 +62,7 @@ export default class DbService<DbEntityType> {
 
         this.entityCache = [];
         const entity = this.compressPropertyValues(newEntity) as DbEntityType;
-        const tableClient = TableClient.fromConnectionString(this.storageAccountConnectionString, tableName);
+        const tableClient = this.getTableClient(tableName);
         try {
              await tableClient.createEntity({
                 partitionKey: tableName,
@@ -73,7 +80,7 @@ export default class DbService<DbEntityType> {
 
         this.entityCache = [];
         const e = this.compressPropertyValues(updatedEntity) as DbEntityType;
-        const tableClient = TableClient.fromConnectionString(this.storageAccountConnectionString, tableName);
+        const tableClient = this.getTableClient(tableName);
         await tableClient.updateEntity(e as TableEntity, "Replace");
 
     }

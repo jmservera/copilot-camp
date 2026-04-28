@@ -43,9 +43,75 @@ provision:
       bicepCliVersion: v0.9.1
 
   - uses: script
-    name: Ensure database
+    name: Grant deployer access to storage and seed database
     with:
-      run: node db-setup.js '${{SECRET_STORAGE_ACCOUNT_CONNECTION_STRING}}'
+      run: |
+        $ErrorActionPreference = 'Continue'
+        $storageAccountName = '${{STORAGE_ACCOUNT_NAME}}'
+        $rgName = '${{AZURE_RESOURCE_GROUP_NAME}}'
+        $subId = '${{AZURE_SUBSCRIPTION_ID}}'
+        $scope = "/subscriptions/$subId/resourceGroups/$rgName/providers/Microsoft.Storage/storageAccounts/$storageAccountName"
+
+        # Get deployer identity
+        $oid = (az ad signed-in-user show --query id -o tsv).Trim()
+        Write-Host "Deployer principal: $oid"
+
+        # Step 1: Open network fully (publicNetworkAccess + defaultAction Allow)
+        Write-Host "`n=== Step 1: Temporarily open storage network access ==="
+        az storage account update --name $storageAccountName --resource-group $rgName --public-network-access Enabled --default-action Allow --only-show-errors | Out-Null
+
+        # Step 2: Verify network state
+        Write-Host "=== Step 2: Verifying storage account state ==="
+        Start-Sleep -Seconds 5
+        $state = az storage account show --name $storageAccountName --resource-group $rgName --query "{publicNetworkAccess:publicNetworkAccess, defaultAction:networkRuleSet.defaultAction}" -o json | ConvertFrom-Json
+        Write-Host "  publicNetworkAccess: $($state.publicNetworkAccess)"
+        Write-Host "  defaultAction: $($state.defaultAction)"
+
+        # Step 3: Assign RBAC roles to deployer
+        Write-Host "=== Step 3: Assign RBAC roles ==="
+        $tableDataContributor = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+        $storageAccountContributor = '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+        az role assignment create --assignee-object-id $oid --assignee-principal-type User --role $tableDataContributor --scope $scope --only-show-errors 2>$null | Out-Null
+        az role assignment create --assignee-object-id $oid --assignee-principal-type User --role $storageAccountContributor --scope $scope --only-show-errors 2>$null | Out-Null
+        Write-Host "  Storage Table Data Contributor + Storage Account Contributor assigned."
+
+        # Step 4: Wait and verify access with a test call
+        Write-Host "=== Step 4: Waiting for propagation and testing access ==="
+        $token = (az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv)
+        $testHeaders = @{
+            'Authorization' = "Bearer $token"
+            'x-ms-version'  = '2020-12-06'
+            'Accept'        = 'application/json;odata=nometadata'
+        }
+        $tableUrl = "https://$storageAccountName.table.core.windows.net/Tables"
+        $maxRetries = 24
+        $retryCount = 0
+        $success = $false
+        while (-not $success -and $retryCount -lt $maxRetries) {
+            $retryCount++
+            Write-Host "  Attempt $retryCount of $maxRetries..."
+            try {
+                $result = Invoke-RestMethod -Uri $tableUrl -Method GET -Headers $testHeaders -ErrorAction Stop
+                Write-Host "  Access confirmed! Found $($result.value.Count) tables."
+                $success = $true
+            } catch {
+                $statusCode = $_.Exception.Response.StatusCode.value__
+                Write-Host "  Got HTTP $statusCode - waiting 10 seconds..."
+                Start-Sleep -Seconds 10
+                # Refresh token in case it expired
+                $token = (az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv)
+                $testHeaders['Authorization'] = "Bearer $token"
+            }
+        }
+        if (-not $success) { throw "Failed to access storage after $maxRetries attempts" }
+
+        # Step 5: Run database setup
+        Write-Host "=== Step 5: Running database setup ==="
+        $env:AZURE_TENANT_ID = (az account show --query tenantId -o tsv).Trim()
+        node db-setup.js $storageAccountName
+
+        # Step 6: Done
+        Write-Host "Done."
       workingDirectory: scripts
 
   # Build app package with latest env value

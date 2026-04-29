@@ -19,10 +19,10 @@
     "dependencies": {
         "@azure/functions": "^4.3.0",
         "@azure/data-tables": "^13.2.2",
-        "@azure/identity": "^4.2.0",
-        "azurite": "^3.26.0"
+        "@azure/identity": "^4.2.0"
     },
     "devDependencies": {
+        "azurite": "^3.26.0",
         "env-cmd": "^10.1.0",
         "@types/node": "^18.11.9",
         "typescript": "^4.1.6"

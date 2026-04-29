@@ -15,7 +15,12 @@ README.md
 tsconfig.json
 teamsapp.yml
 teamsapp.*.yml
+m365agents.yml
+m365agents.*.yml
 /env/
 /appPackage/
 /infra/
 /devTools/
+/scripts/
+/sampleDocs/
+/http/

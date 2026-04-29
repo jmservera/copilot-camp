@@ -4,9 +4,6 @@
   "parameters": {
     "resourceBaseName": {
       "value": "plugin${{RESOURCE_SUFFIX}}"
-    },    
-    "functionAppSKU": {
-      "value": "Y1"
     },
     "functionStorageSKU": {
       "value": "Standard_LRS"
